@@ -47,6 +47,8 @@ const MIME_TYPES = {
   '.jpeg': 'image/jpeg',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm',
   '.woff2': 'font/woff2',
   '.woff': 'font/woff',
   '.txt': 'text/plain; charset=utf-8'
@@ -222,14 +224,49 @@ const server = http.createServer(async (req, res) => {
     const ext = path.extname(safePath).toLowerCase();
     const mime = MIME_TYPES[ext] || 'application/octet-stream';
 
-    // Long-term cache for immutable assets (frames and product images)
-    const isAsset = relativePath.startsWith('/frames/') || relativePath.startsWith('/img/');
+    // Long-term cache for immutable assets (frames, images, and video)
+    const isAsset = relativePath.startsWith('/frames/') || relativePath.startsWith('/img/') || relativePath.startsWith('/video/');
     const cacheControl = isAsset
       ? 'public, max-age=31536000, immutable'
       : 'no-cache, no-store, must-revalidate';
 
+    // Suporte a HTTP Range requests (206 Partial Content) para Safari / iOS iPhone
+    const rangeHeader = req.headers.range;
+    const rg = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader || '');
+
+    if (rg) {
+      let start = rg[1] === '' ? Math.max(0, stats.size - +rg[2]) : parseInt(rg[1], 10);
+      let end = rg[1] === '' || rg[2] === '' ? stats.size - 1 : Math.min(parseInt(rg[2], 10), stats.size - 1);
+
+      if (start > end || start >= stats.size) {
+        res.writeHead(416, {
+          'Content-Range': `bytes */${stats.size}`,
+          'Accept-Ranges': 'bytes'
+        });
+        return res.end();
+      }
+
+      res.writeHead(206, {
+        'Content-Type': mime,
+        'Content-Range': `bytes ${start}-${end}/${stats.size}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': end - start + 1,
+        'Cache-Control': cacheControl
+      });
+
+      const stream = fs.createReadStream(safePath, { start, end });
+      stream.on('error', () => {
+        if (!res.headersSent) {
+          res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+          res.end('Erro interno');
+        }
+      });
+      return stream.pipe(res);
+    }
+
     res.writeHead(200, {
       'Content-Type': mime,
+      'Accept-Ranges': 'bytes',
       'Content-Length': stats.size,
       'Cache-Control': cacheControl
     });

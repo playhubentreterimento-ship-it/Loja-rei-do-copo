@@ -75,7 +75,7 @@
     setupReelDots();
     updateReelText(0);
     renderCatalog();
-    setupParallax();
+    hero();
     setupScrollControl();
     setupCartUI();
     requestAnimationFrame(renderLoop);
@@ -121,11 +121,6 @@
           el.footerBrandName.textContent = state.store.brand;
         }
         document.title = `${state.store.brand} | Vitrine 360° e Catálogo`;
-      }
-
-      // Produto de destaque no Hero (mantém a taça premium estática definida no HTML)
-      if (el.heroFeaturedImg && !el.heroFeaturedImg.src.includes('hero-taca')) {
-        el.heroFeaturedImg.src = 'img/hero-taca.png';
       }
 
       // Pré-carregamento imediato de todas as imagens da vitrine (decodificação sob demanda)
@@ -335,7 +330,7 @@
     const N = state.framesData ? state.framesData.m.length : 11;
     const k = state.currentModelIndex + d;
     const catalogoEl = document.getElementById('catalogo');
-    const heroEl = document.getElementById('topo');
+    const heroEl = document.getElementById('hero') || document.getElementById('topo');
 
     if (k >= N) {
       // Saída em UMA rolagem para o catálogo
@@ -489,23 +484,52 @@
     }
   }
 
-  // --- Parallax da Imagem Destaque do Topo (Apenas Desktop, Estático no Mobile) ---
-  function setupParallax() {
-    const wrap = el.heroImgWrap;
-    if (!wrap) return;
+  // --- Vídeo em loop no Topo (substitui a taça estática) ---
+  function hero() {
+    const heroSection = document.getElementById('hero') || document.getElementById('topo');
+    if (!heroSection) return;
 
-    window.addEventListener('scroll', function () {
-      if (window.innerWidth <= 860) {
-        wrap.style.transform = 'none';
-        return;
-      }
-      const scrollY = window.scrollY || window.pageYOffset;
-      if (scrollY < window.innerHeight) {
-        const transY = scrollY * 0.12;
-        const rotZ = scrollY * 0.01;
-        wrap.style.transform = `translateY(${transY}px) rotate(${rotZ}deg)`;
-      }
-    }, { passive: true });
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let v = heroSection.querySelector('.hv');
+
+    if (!v) {
+      v = document.createElement('video');
+      v.className = 'hv';
+      v.muted = true;
+      v.loop = true;
+      v.playsInline = true;
+      v.preload = 'auto';
+      v.poster = 'video/hero-poster.jpg';
+      v.setAttribute('aria-hidden', 'true');
+      v.setAttribute('tabindex', '-1');
+      if (!reduce) v.autoplay = true;
+
+      v.innerHTML = `
+        <source src="video/hero.webm" type="video/webm">
+        <source src="video/hero.mp4" type="video/mp4">
+      `;
+      heroSection.appendChild(v);
+    }
+
+    v.muted = true;
+    if (!reduce) {
+      v.play().catch(() => {});
+    } else {
+      v.removeAttribute('autoplay');
+      v.pause();
+    }
+
+    // Economiza bateria: pausa quando o topo sai da tela e reproduz ao voltar
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(([entry]) => {
+        if (reduce) return;
+        if (entry.isIntersecting) {
+          v.play().catch(() => {});
+        } else {
+          v.pause();
+        }
+      }, { threshold: 0.05 }).observe(heroSection);
+    }
   }
 
   // --- Catálogo e Filtros ---

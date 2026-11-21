@@ -25,10 +25,10 @@
   </header>
 
   <main id="main-content">
-    <!-- 2. Topo (Hero) -->
-    <section class="hero" id="topo" aria-label="Apresentação">
+    <!-- 2. Topo (Hero) com vídeo em loop -->
+    <section class="hero" id="hero" aria-label="Apresentação">
       <div class="hero-grid">
-        <div class="hero-content">
+        <div class="hc hero-content">
           <div class="hero-tag">Coleção Exclusiva</div>
           <h1 class="hero-title">Seu copo,<br><em>sua história.</em></h1>
           <p class="hero-desc">
@@ -45,12 +45,10 @@
           </div>
         </div>
 
-        <div class="hero-visual" aria-hidden="true">
-          <div class="hero-glow"></div>
-          <div class="hero-img-wrap" id="hero-img-wrap">
-            <img src="img/hero-taca.png" alt="Taça personalizada premium" class="hero-img" id="hero-featured-img">
-          </div>
-        </div>
+        <video class="hv" muted loop playsinline preload="auto" poster="video/hero-poster.jpg" aria-hidden="true" tabindex="-1">
+          <source src="video/hero.webm" type="video/webm">
+          <source src="video/hero.mp4" type="video/mp4">
+        </video>
       </div>
     </section>
 

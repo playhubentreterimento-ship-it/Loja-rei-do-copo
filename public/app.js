@@ -108,11 +108,9 @@
         document.title = `${state.store.brand} | Vitrine 360° e Catálogo`;
       }
 
-      // Produto de destaque no Hero
-      const featured = state.store.products.find(p => p.feat) || state.store.products[0];
-      if (featured && el.heroFeaturedImg) {
-        el.heroFeaturedImg.src = featured.img;
-        el.heroFeaturedImg.alt = featured.name;
+      // Produto de destaque no Hero (mantém a taça premium estática definida no HTML)
+      if (el.heroFeaturedImg && !el.heroFeaturedImg.src.includes('hero-taca')) {
+        el.heroFeaturedImg.src = 'img/hero-taca.png';
       }
 
       // Pré-carregamento imediato de todas as imagens da vitrine (decodificação sob demanda)
@@ -476,16 +474,20 @@
     }
   }
 
-  // --- Parallax da Imagem Destaque do Topo ---
+  // --- Parallax da Imagem Destaque do Topo (Apenas Desktop, Estático no Mobile) ---
   function setupParallax() {
     const wrap = el.heroImgWrap;
     if (!wrap) return;
 
     window.addEventListener('scroll', function () {
+      if (window.innerWidth <= 860) {
+        wrap.style.transform = 'none';
+        return;
+      }
       const scrollY = window.scrollY || window.pageYOffset;
       if (scrollY < window.innerHeight) {
-        const transY = scrollY * 0.16;
-        const rotZ = scrollY * 0.015;
+        const transY = scrollY * 0.12;
+        const rotZ = scrollY * 0.01;
         wrap.style.transform = `translateY(${transY}px) rotate(${rotZ}deg)`;
       }
     }, { passive: true });

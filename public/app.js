@@ -93,6 +93,21 @@
       }
       state.store = await storeRes.json();
 
+      // Sincroniza com alterações salvas no navegador pelo painel administrativo
+      try {
+        const localData = localStorage.getItem('reidocopo_store_data');
+        if (localData) {
+          const parsed = JSON.parse(localData);
+          if (parsed && typeof parsed === 'object') {
+            if (parsed.brand) state.store.brand = parsed.brand;
+            if (parsed.whatsapp) state.store.whatsapp = parsed.whatsapp;
+            if (Array.isArray(parsed.products) && parsed.products.length > 0) {
+              state.store.products = parsed.products;
+            }
+          }
+        }
+      } catch (e) {}
+
       const framesRes = await fetch('data/frames.json');
       state.framesData = await framesRes.json();
 

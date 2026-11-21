@@ -175,6 +175,22 @@
         res = await fetch('data/store.json');
       }
       currentStore = await res.json();
+
+      // Sincroniza com alterações salvas no navegador (modo estático Vercel)
+      try {
+        const localData = localStorage.getItem('reidocopo_store_data');
+        if (localData) {
+          const parsed = JSON.parse(localData);
+          if (parsed && typeof parsed === 'object') {
+            if (parsed.brand) currentStore.brand = parsed.brand;
+            if (parsed.whatsapp) currentStore.whatsapp = parsed.whatsapp;
+            if (Array.isArray(parsed.products) && parsed.products.length > 0) {
+              currentStore.products = parsed.products;
+            }
+          }
+        }
+      } catch (e) {}
+
       populateUI();
       return true;
     } catch (err) {
@@ -251,6 +267,13 @@
     if (!key) {
       showLogin();
       return false;
+    }
+
+    // Salva sempre no localStorage para sincronização imediata no navegador (modo Vercel)
+    try {
+      localStorage.setItem('reidocopo_store_data', JSON.stringify(storeData));
+    } catch (e) {
+      console.warn('Erro ao salvar no localStorage:', e);
     }
 
     try {

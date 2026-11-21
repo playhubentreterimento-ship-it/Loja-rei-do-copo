@@ -217,45 +217,126 @@
     ctx.globalAlpha = 1;
   }
 
-  // --- Transição entre Modelos ---
-  function startTransition(targetIndex) {
+  // --- Máquina de Estados da Vitrine 360° (Regra Principal: 1 Rolagem = 1 Modelo) ---
+  let busy = false;
+  let hardEnd = 0;
+  let lastWheelTime = 0;
+  let touchStartY = 0;
+  let touchHandled = false;
+
+  function snap(y) {
+    busy = true;
+    hardEnd = Date.now() + 1600;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    setTimeout(release, 900);
+  }
+
+  function release() {
+    const now = Date.now();
+    if (now < hardEnd && (now - lastWheelTime < 150)) {
+      setTimeout(release, 60);
+    } else {
+      busy = false;
+    }
+  }
+
+  function go(k) {
     if (state.isTransitioning || !state.framesData) return;
     const models = state.framesData.m;
     const transitions = state.framesData.t;
 
-    if (targetIndex < 0 || targetIndex >= models.length) return;
-    if (targetIndex === state.currentModelIndex) return;
+    if (k < 0 || k >= models.length) return;
+    if (k === state.currentModelIndex) return;
 
     const fromIndex = state.currentModelIndex;
-    const direction = targetIndex > fromIndex ? 1 : -1;
+    const direction = k > fromIndex ? 1 : -1;
     state.transitionDirection = direction;
 
     let seq = [];
     const startFrame = state.currentRestFrame;
 
     if (direction === 1) {
-      // Avançar: fromIndex -> targetIndex (targetIndex = fromIndex + 1)
+      // Avançar: fromIndex -> k
       const transFrames = transitions[fromIndex] || [];
-      const endFrame = models[targetIndex].i[0];
+      const endFrame = models[k].i[0];
       seq = [startFrame, ...transFrames, endFrame];
     } else {
       // Voltar: toca ao contrário e termina no último frame de repouso do modelo anterior
-      const transFrames = transitions[targetIndex] || [];
+      const transFrames = transitions[k] || [];
       const reversedTrans = [...transFrames].reverse();
-      const endFrame = models[targetIndex].i[models[targetIndex].i.length - 1];
+      const endFrame = models[k].i[models[k].i.length - 1];
       seq = [startFrame, ...reversedTrans, endFrame];
     }
 
     state.transitionSequence = seq;
-    // Duração clamp(950, 1400, seq.length * 75)
     state.transitionDuration = Math.min(1400, Math.max(950, seq.length * 75));
     state.transitionStartTime = performance.now();
     state.isTransitioning = true;
-    state.currentModelIndex = targetIndex;
+    state.currentModelIndex = k;
 
-    // Atualiza texto e pontos
-    animateReelTextChange(targetIndex);
-    updateReelDots(targetIndex);
+    // Trava durante a transição
+    busy = true;
+    hardEnd = Date.now() + state.transitionDuration + 700;
+    setTimeout(release, state.transitionDuration + 120);
+
+    animateReelTextChange(k);
+    updateReelDots(k);
+  }
+
+  function can(d) {
+    const reel = el.reel;
+    if (!reel) return false;
+    const r = reel.getBoundingClientRect();
+    const winHeight = window.innerHeight;
+
+    // false se a vitrine está longe da tela (r.bottom <= -6 ou r.top >= innerHeight * 1.15)
+    if (r.bottom <= -6 || r.top >= winHeight * 1.15) return false;
+
+    // true se busy
+    if (busy) return true;
+
+    // Se não estiver alinhada (|r.top| >= 3), true só quando (d > 0 e r.top > 0) ou (d < 0 e r.top < 0)
+    if (Math.abs(r.top) >= 3) {
+      return (d > 0 && r.top > 0) || (d < 0 && r.top < 0);
+    }
+
+    return true;
+  }
+
+  function handle(d, e) {
+    if (!can(d)) return false;
+    if (e && e.preventDefault) e.preventDefault();
+    if (busy) return true;
+
+    const reel = el.reel;
+    if (!reel) return false;
+    const r = reel.getBoundingClientRect();
+
+    // Se |r.top| >= 3, snap(scrollY + r.top) para alinhar
+    if (Math.abs(r.top) >= 3) {
+      snap(window.scrollY + r.top);
+      return true;
+    }
+
+    // Alinhada
+    const N = state.framesData ? state.framesData.m.length : 11;
+    const k = state.currentModelIndex + d;
+    const catalogoEl = document.getElementById('catalogo');
+    const heroEl = document.getElementById('topo');
+
+    if (k >= N) {
+      // Saída em UMA rolagem para o catálogo
+      const targetY = catalogoEl ? catalogoEl.offsetTop : window.scrollY + window.innerHeight;
+      snap(targetY);
+    } else if (k < 0) {
+      // Saída em UMA rolagem para o hero
+      const targetY = heroEl ? heroEl.offsetTop : 0;
+      snap(targetY);
+    } else {
+      go(k);
+    }
+
+    return true;
   }
 
   // --- Indicadores Pontos Verticais (11) ---
@@ -313,80 +394,16 @@
     }
   }
 
-  // --- Controle de Rolagem da Vitrine (Regra Principal 1 Rolagem = 1 Modelo) ---
+  // --- Controle de Eventos de Rolagem, Toque e Teclado ---
   function setupScrollControl() {
-    const reel = el.reel;
-    if (!reel) return;
-
-    function canStep() {
-      const now = Date.now();
-      return (
-        !state.isTransitioning &&
-        !state.isAligning &&
-        now - state.transitionEndTime >= 120 &&
-        now - state.lastWheelTime >= 150
-      );
-    }
-
     // Evento de Roda do Mouse / Trackpad
     window.addEventListener(
       'wheel',
       function (e) {
         if (Math.abs(e.deltaY) <= 3) return;
-
-        const now = Date.now();
-        const rect = reel.getBoundingClientRect();
-        const winHeight = window.innerHeight;
-
-        // A trava só vale quando a vitrine cobre o centro da tela
-        const inCenter = rect.top < winHeight * 0.5 && rect.bottom > winHeight * 0.5;
-        if (!inCenter) return;
-
-        // Se a vitrine cobre o centro mas ainda não está perfeitamente alinhada no topo (|top| >= 3)
-        if (Math.abs(rect.top) >= 3) {
-          e.preventDefault();
-          if (!state.isAligning) {
-            state.isAligning = true;
-            reel.scrollIntoView({ behavior: 'smooth' });
-            setTimeout(() => {
-              state.isAligning = false;
-            }, 800);
-          }
-          return;
-        }
-
-        // Vitrine perfeitamente alinhada (|top| < 3)
-        const maxIndex = state.framesData ? state.framesData.m.length - 1 : 10;
-
-        if (e.deltaY > 0) {
-          // Rolar para baixo
-          if (state.currentModelIndex < maxIndex) {
-            e.preventDefault();
-            if (canStep()) {
-              state.lastWheelTime = now;
-              startTransition(state.currentModelIndex + 1);
-            }
-          } else {
-            // No último modelo, se estiver animando, bloqueia; se em repouso, libera a rolagem para o catálogo
-            if (state.isTransitioning) {
-              e.preventDefault();
-            }
-          }
-        } else if (e.deltaY < 0) {
-          // Rolar para cima
-          if (state.currentModelIndex > 0) {
-            e.preventDefault();
-            if (canStep()) {
-              state.lastWheelTime = now;
-              startTransition(state.currentModelIndex - 1);
-            }
-          } else {
-            // No primeiro modelo, se estiver animando, bloqueia; se em repouso, libera a rolagem para o topo
-            if (state.isTransitioning) {
-              e.preventDefault();
-            }
-          }
-        }
+        lastWheelTime = Date.now();
+        const d = e.deltaY > 0 ? 1 : -1;
+        handle(d, e);
       },
       { passive: false }
     );
@@ -396,9 +413,8 @@
       'touchstart',
       function (e) {
         if (e.touches.length === 1) {
-          state.touchStartY = e.touches[0].clientY;
-          state.touchStartX = e.touches[0].clientX;
-          state.touchActive = true;
+          touchStartY = e.touches[0].clientY;
+          touchHandled = false;
         }
       },
       { passive: true }
@@ -407,37 +423,18 @@
     window.addEventListener(
       'touchmove',
       function (e) {
-        if (!state.touchActive || e.touches.length !== 1) return;
-        const rect = reel.getBoundingClientRect();
-        const winHeight = window.innerHeight;
-        const inCenter = rect.top < winHeight * 0.5 && rect.bottom > winHeight * 0.5;
+        if (e.touches.length !== 1) return;
+        const diff = touchStartY - e.touches[0].clientY;
+        if (Math.abs(diff) < 5) return;
+        const d = diff > 0 ? 1 : -1;
 
-        if (!inCenter) return;
-
-        const deltaY = state.touchStartY - e.touches[0].clientY;
-        const maxIndex = state.framesData ? state.framesData.m.length - 1 : 10;
-
-        if (Math.abs(rect.top) >= 5) {
-          e.preventDefault();
-          if (!state.isAligning) {
-            state.isAligning = true;
-            reel.scrollIntoView({ behavior: 'smooth' });
-            setTimeout(() => {
-              state.isAligning = false;
-            }, 800);
-          }
-          return;
+        if (can(d)) {
+          if (e.cancelable) e.preventDefault();
         }
 
-        // Se alinhado e gesto vertical relevante
-        if (Math.abs(deltaY) > 8) {
-          if (
-            (deltaY > 0 && state.currentModelIndex < maxIndex) ||
-            (deltaY < 0 && state.currentModelIndex > 0) ||
-            state.isTransitioning
-          ) {
-            e.preventDefault();
-          }
+        if (!touchHandled && Math.abs(diff) >= 40) {
+          touchHandled = true;
+          handle(d, e);
         }
       },
       { passive: false }
@@ -445,26 +442,8 @@
 
     window.addEventListener(
       'touchend',
-      function (e) {
-        if (!state.touchActive) return;
-        state.touchActive = false;
-
-        const rect = reel.getBoundingClientRect();
-        const winHeight = window.innerHeight;
-        const inCenter = rect.top < winHeight * 0.5 && rect.bottom > winHeight * 0.5;
-
-        if (!inCenter || Math.abs(rect.top) >= 10) return;
-
-        const deltaY = state.touchStartY - (e.changedTouches[0] ? e.changedTouches[0].clientY : 0);
-        const maxIndex = state.framesData ? state.framesData.m.length - 1 : 10;
-
-        if (Math.abs(deltaY) >= 40 && !state.isTransitioning) {
-          if (deltaY > 0 && state.currentModelIndex < maxIndex) {
-            startTransition(state.currentModelIndex + 1);
-          } else if (deltaY < 0 && state.currentModelIndex > 0) {
-            startTransition(state.currentModelIndex - 1);
-          }
-        }
+      function () {
+        touchHandled = false;
       },
       { passive: true }
     );
@@ -474,23 +453,10 @@
       const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
       if (['input', 'textarea', 'select'].includes(activeTag)) return;
 
-      const rect = reel.getBoundingClientRect();
-      const winHeight = window.innerHeight;
-      const inCenter = rect.top < winHeight * 0.5 && rect.bottom > winHeight * 0.5;
-
-      if (!inCenter || Math.abs(rect.top) >= 10) return;
-      const maxIndex = state.framesData ? state.framesData.m.length - 1 : 10;
-
       if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
-        if (state.currentModelIndex < maxIndex) {
-          e.preventDefault();
-          if (canStep()) startTransition(state.currentModelIndex + 1);
-        }
+        handle(1, e);
       } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
-        if (state.currentModelIndex > 0) {
-          e.preventDefault();
-          if (canStep()) startTransition(state.currentModelIndex - 1);
-        }
+        handle(-1, e);
       }
     });
 

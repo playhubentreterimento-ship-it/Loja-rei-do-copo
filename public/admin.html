@@ -283,24 +283,68 @@
   <!-- Tela de Login com Senha -->
   <div class="login-modal" id="login-modal">
     <div class="login-box">
-      <h1 class="login-title">Painel da Loja</h1>
-      <p class="login-desc">Digite sua senha de acesso para gerenciar produtos e configurações.</p>
+      <!-- Visão 1: Formulário de Login -->
+      <div id="login-view">
+        <h1 class="login-title">Painel da Loja</h1>
+        <p class="login-desc">Digite sua senha de acesso para gerenciar produtos e configurações.</p>
 
-      <div class="alert error" id="login-error"></div>
+        <div class="alert error" id="login-error"></div>
+        <div class="alert success" id="login-success"></div>
 
-      <form id="form-login">
-        <div class="form-group" style="text-align: left;">
-          <label for="admin-pass" class="form-label">Senha</label>
-          <input type="password" id="admin-pass" class="form-input" placeholder="Digite a senha..." required autofocus>
+        <form id="form-login">
+          <div class="form-group" style="text-align: left;">
+            <label for="admin-pass" class="form-label">Senha de Acesso</label>
+            <div style="position: relative;">
+              <input type="password" id="admin-pass" class="form-input" style="width: 100%; padding-right: 42px;" placeholder="Digite a senha..." required autofocus>
+              <button type="button" class="btn-toggle-eye" data-target="admin-pass" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 1rem; opacity: 0.6; padding: 6px; cursor: pointer;" title="Mostrar/ocultar senha">👁</button>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">
+            Entrar no painel
+          </button>
+        </form>
+
+        <div style="margin-top: 16px;">
+          <button type="button" id="btn-show-reset" style="background: none; border: none; color: var(--gold); text-decoration: underline; font-size: 0.88rem; cursor: pointer;">
+            Esqueceu ou deseja redefinir a senha?
+          </button>
         </div>
-        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">
-          Entrar no painel
-        </button>
-      </form>
 
-      <p style="margin-top: 20px; font-size: 0.82rem; color: var(--text-muted);">
-        <a href="/" style="text-decoration: underline;">Voltar para a loja</a>
-      </p>
+        <p style="margin-top: 20px; font-size: 0.82rem; color: var(--text-muted);">
+          <a href="/" style="text-decoration: underline;">Voltar para a loja</a>
+        </p>
+      </div>
+
+      <!-- Visão 2: Formulário de Redefinição de Senha -->
+      <div id="reset-view" style="display: none;">
+        <h1 class="login-title">Redefinir Senha</h1>
+        <p class="login-desc">Cadastre uma nova senha de acesso para o seu painel.</p>
+
+        <div class="alert error" id="reset-error"></div>
+
+        <form id="form-reset">
+          <div class="form-group" style="text-align: left;">
+            <label for="new-pass-reset" class="form-label">Nova Senha</label>
+            <div style="position: relative;">
+              <input type="password" id="new-pass-reset" class="form-input" style="width: 100%; padding-right: 42px;" placeholder="Mínimo 4 caracteres..." required minlength="4">
+              <button type="button" class="btn-toggle-eye" data-target="new-pass-reset" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 1rem; opacity: 0.6; padding: 6px; cursor: pointer;" title="Mostrar/ocultar senha">👁</button>
+            </div>
+          </div>
+
+          <div class="form-group" style="text-align: left;">
+            <label for="confirm-pass-reset" class="form-label">Confirmar Nova Senha</label>
+            <input type="password" id="confirm-pass-reset" class="form-input" placeholder="Repita a nova senha..." required minlength="4">
+          </div>
+
+          <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">
+            Salvar nova senha e entrar
+          </button>
+
+          <button type="button" id="btn-back-to-login" class="btn-secondary" style="width: 100%; margin-top: 10px;">
+            Voltar ao login
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -401,6 +445,32 @@
           </tbody>
         </table>
       </div>
+    </section>
+
+    <!-- 4. Segurança do Painel (Alterar Senha) -->
+    <section class="admin-box">
+      <h2 class="admin-box-title">Segurança & Alteração de Senha</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+        Altere a senha de acesso a este painel administrativo a qualquer momento.
+      </p>
+      <form id="form-change-pass">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="new-pass-field" class="form-label">Nova Senha</label>
+            <div style="position: relative;">
+              <input type="password" id="new-pass-field" class="form-input" style="width: 100%; padding-right: 42px;" placeholder="Mínimo 4 caracteres..." required minlength="4">
+              <button type="button" class="btn-toggle-eye" data-target="new-pass-field" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 1rem; opacity: 0.6; padding: 6px; cursor: pointer;" title="Mostrar/ocultar senha">👁</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="confirm-pass-field" class="form-label">Confirmar Nova Senha</label>
+            <input type="password" id="confirm-pass-field" class="form-input" placeholder="Repita a nova senha..." required minlength="4">
+          </div>
+        </div>
+        <button type="submit" class="btn-primary" style="margin-top: 10px;">
+          Atualizar senha de acesso
+        </button>
+      </form>
     </section>
   </div>
 

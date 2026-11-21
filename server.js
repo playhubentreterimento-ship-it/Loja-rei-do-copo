@@ -4,14 +4,37 @@ const path = require('path');
 
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const DEFAULT_PASSWORD = 'troque-esta-senha';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || DEFAULT_PASSWORD;
-
-if (ADMIN_PASSWORD === DEFAULT_PASSWORD) {
-  console.warn('\x1b[33m[AVISO] Senha de administrador padrão em uso ("troque-esta-senha"). Defina ADMIN_PASSWORD em produção!\x1b[0m');
-}
 
 const PUBLIC_DIR = path.resolve(__dirname, 'public');
 const STORE_FILE = path.join(PUBLIC_DIR, 'data', 'store.json');
+const CONFIG_FILE = path.join(PUBLIC_DIR, 'data', 'admin-config.json');
+
+function getAdminPassword() {
+  if (process.env.ADMIN_PASSWORD) return process.env.ADMIN_PASSWORD;
+  try {
+    if (fs.existsSync(CONFIG_FILE)) {
+      const cfg = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
+      if (cfg && cfg.password) return cfg.password;
+    }
+  } catch (e) {}
+  return DEFAULT_PASSWORD;
+}
+
+function setAdminPassword(newPass) {
+  try {
+    const dir = path.dirname(CONFIG_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(CONFIG_FILE, JSON.stringify({ password: newPass, updatedAt: new Date().toISOString() }, null, 2), 'utf8');
+    return true;
+  } catch (e) {
+    console.error('Erro ao salvar admin-config.json:', e);
+    return false;
+  }
+}
+
+if (getAdminPassword() === DEFAULT_PASSWORD) {
+  console.warn('\x1b[33m[AVISO] Senha de administrador padrão em uso ("troque-esta-senha"). Altere no painel ou defina ADMIN_PASSWORD!\x1b[0m');
+}
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -64,7 +87,7 @@ function sendJson(res, statusCode, data, headers = {}) {
 
 function verifyAuth(req, res) {
   const key = req.headers['x-admin-key'];
-  if (!key || key !== ADMIN_PASSWORD) {
+  if (!key || key !== getAdminPassword()) {
     sendJson(res, 401, { erro: 'Senha incorreta' });
     return false;
   }
@@ -74,6 +97,36 @@ function verifyAuth(req, res) {
 const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = decodeURIComponent(parsedUrl.pathname);
+
+  // API Routes
+  if (pathname === '/api/login' && req.method === 'POST') {
+    try {
+      const bodyStr = await readBody(req);
+      const { password } = JSON.parse(bodyStr);
+      const currentPass = getAdminPassword();
+      if (password === currentPass) {
+        return sendJson(res, 200, { ok: true, token: currentPass });
+      } else {
+        return sendJson(res, 401, { ok: false, erro: 'Senha incorreta. Tente novamente.' });
+      }
+    } catch (err) {
+      return sendJson(res, 400, { ok: false, erro: 'Requisição inválida.' });
+    }
+  }
+
+  if (pathname === '/api/reset-password' && req.method === 'POST') {
+    try {
+      const bodyStr = await readBody(req);
+      const { newPassword } = JSON.parse(bodyStr);
+      if (!newPassword || newPassword.length < 4) {
+        return sendJson(res, 400, { ok: false, erro: 'A nova senha deve ter no mínimo 4 caracteres.' });
+      }
+      setAdminPassword(newPassword);
+      return sendJson(res, 200, { ok: true, mensagem: 'Senha redefinida com sucesso!', token: newPassword });
+    } catch (err) {
+      return sendJson(res, 500, { ok: false, erro: 'Erro ao salvar nova senha.' });
+    }
+  }
 
   // API Routes
   if (pathname === '/api/store') {

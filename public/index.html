@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Lumina Personalizados | Copos, Taças e Squeezes com Vitrine 360°</title>
+  <meta name="description" content="Copos, taças, squeezes e canecas personalizados de alto padrão. Faça seu orçamento exclusivo via WhatsApp.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Fundo sutil com grade e máscara radial -->
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- 1. Menu Fixo -->
+  <header class="navbar" role="banner">
+    <a href="#" class="nav-brand" id="nav-brand-name">
+      <span class="nav-brand-dot"></span>
+      <span class="brand-text">Lumina</span>
+    </a>
+    <nav class="nav-links" aria-label="Navegação principal">
+      <a href="#catalogo" class="nav-link">Catálogo</a>
+      <a href="#reel" class="nav-link">Vitrine 360°</a>
+      <a href="/admin" class="nav-admin-link" title="Acessar painel administrativo">Painel</a>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <!-- 2. Topo (Hero) -->
+    <section class="hero" id="topo" aria-label="Apresentação">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="hero-tag">Coleção Exclusiva</div>
+          <h1 class="hero-title">Seu copo,<br><em>sua história.</em></h1>
+          <p class="hero-desc">
+            Personalização premium com acabamento impecável. Escolha seus modelos prediletos e receba seu orçamento direto no WhatsApp.
+          </p>
+          <div class="hero-actions">
+            <a href="#reel" class="btn-primary" id="btn-hero-reel">
+              <span>Ver vitrine 360°</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+            </a>
+            <a href="#catalogo" class="btn-secondary">Explorar catálogo</a>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-glow"></div>
+          <div class="hero-img-wrap" id="hero-img-wrap">
+            <img src="img/products/p11.webp" alt="Produto em destaque" class="hero-img" id="hero-featured-img">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Vitrine 360° -->
+    <section id="reel" aria-label="Vitrine Interativa 360 Graus">
+      <!-- Canvas de alta precisão 576x1024 -->
+      <canvas id="cv" width="576" height="1024" aria-label="Visualizador 360 de modelos"></canvas>
+
+      <div class="reel-overlay">
+        <!-- Texto à esquerda -->
+        <div class="reel-left" id="reel-text-block">
+          <span class="reel-counter" id="reel-counter">01 / 11</span>
+          <h2 class="reel-title" id="reel-title">Carregando…</h2>
+          <p class="reel-desc" id="reel-desc">Aguarde o carregamento dos frames em alta resolução.</p>
+          <button type="button" class="reel-btn" id="btn-reel-add">Quero este modelo</button>
+        </div>
+
+        <!-- Indicadores pontinhos verticais à direita -->
+        <div class="reel-dots" id="reel-dots" aria-hidden="true">
+          <!-- Gerados dinamicamente via app.js (11 pontos) -->
+        </div>
+      </div>
+
+      <!-- Dica de rolagem no rodapé -->
+      <div class="reel-hint" aria-hidden="true">
+        <span>Role para trocar de modelo</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 4. Catálogo -->
+    <section class="catalog-section" id="catalogo" aria-label="Catálogo de produtos">
+      <div class="section-header">
+        <span class="section-tag">Nossa Linha Completa</span>
+        <h2 class="section-title">Escolha seus modelos</h2>
+      </div>
+
+      <!-- Filtros por Categoria -->
+      <div class="catalog-filters" id="catalog-filters" role="group" aria-label="Filtrar por categoria">
+        <!-- Gerados dinamicamente via app.js -->
+      </div>
+
+      <!-- Grade de Produtos -->
+      <div class="products-grid" id="products-grid">
+        <!-- Cartões gerados dinamicamente via app.js -->
+      </div>
+    </section>
+  </main>
+
+  <!-- 5. Rodapé -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-brand" id="footer-brand-name">Lumina Personalizados</div>
+      <p>Copos, taças, squeezes e canecas para casamentos, formaturas, empresas e momentos inesquecíveis.</p>
+      <p style="font-size: 0.8rem; opacity: 0.6;">© 2026 Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- 6. Botão Flutuante Meu Pedido -->
+  <button type="button" class="btn-floating-cart" id="btn-open-cart" aria-label="Abrir gaveta do pedido">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <path d="M16 10a4 4 0 0 1-8 0"/>
+    </svg>
+    <span>Meu pedido</span>
+    <span class="cart-badge" id="cart-count">0</span>
+  </button>
+
+  <!-- Gaveta do Pedido (Drawer) -->
+  <div class="cart-drawer-overlay" id="cart-drawer-overlay" aria-hidden="true"></div>
+  <aside class="cart-drawer" id="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-heading">
+    <div class="drawer-header">
+      <h2 class="drawer-title" id="drawer-heading">Meu pedido</h2>
+      <button type="button" class="btn-close-drawer" id="btn-close-drawer" aria-label="Fechar gaveta">✕</button>
+    </div>
+
+    <div class="drawer-items" id="drawer-items">
+      <!-- Itens do pedido adicionados dinamicamente -->
+    </div>
+
+    <div class="drawer-footer">
+      <button type="button" class="btn-whatsapp" id="btn-send-whatsapp" disabled>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.23 8.23 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.25-1.5-1.4-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.12-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.77 2.71 4.3 3.8 2.52 1.09 2.52.73 2.98.69.45-.05 1.47-.6 1.68-1.18.21-.59.21-1.09.15-1.19-.06-.1-.23-.16-.48-.28z"/>
+        </svg>
+        <span>Enviar pedido no WhatsApp</span>
+      </button>
+      <button type="button" class="btn-continue" id="btn-continue-shopping">Continuar escolhendo</button>
+    </div>
+  </aside>
+
+  <script src="app.js"></script>
+</body>
+</html>

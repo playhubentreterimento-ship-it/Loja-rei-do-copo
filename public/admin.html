@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel Administrativo | Loja de Copos</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Estilos específicos do painel administrativo */
+    .admin-container {
+      max-width: 1040px;
+      margin: 40px auto 100px auto;
+      padding: 0 max(24px, env(safe-area-inset-right)) 0 max(24px, env(safe-area-inset-left));
+      width: 100%;
+    }
+
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 36px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .admin-title {
+      font-family: var(--font-title);
+      font-size: 2.2rem;
+      font-weight: 500;
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .admin-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .admin-box-title {
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+      font-weight: 500;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-input, .form-textarea {
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: var(--bg-sec);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: border-color var(--transition-fast);
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--gold);
+      outline: none;
+    }
+
+    .form-textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0 20px 0;
+      cursor: pointer;
+    }
+
+    .checkbox-group input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+
+    .file-dropzone {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--bg-sec);
+      transition: border-color var(--transition-fast);
+      position: relative;
+    }
+
+    .file-dropzone:hover {
+      border-color: var(--gold);
+    }
+
+    .file-dropzone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .preview-img {
+      max-width: 140px;
+      max-height: 140px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-top: 12px;
+      display: none;
+      border: 1px solid var(--border);
+    }
+
+    /* Products Table / Cards */
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .admin-table th, .admin-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .admin-table th {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .admin-table td {
+      font-size: 0.95rem;
+    }
+
+    .table-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #0b0e13;
+    }
+
+    .btn-star {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .btn-star.active {
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(226, 194, 125, 0.5);
+    }
+
+    .btn-delete {
+      color: #ff6b6b;
+      padding: 6px 12px;
+      border-radius: var(--radius-btn);
+      border: 1px solid rgba(255, 107, 107, 0.2);
+      font-size: 0.85rem;
+    }
+
+    .btn-delete:hover {
+      background: rgba(255, 107, 107, 0.15);
+      border-color: #ff6b6b;
+    }
+
+    .alert {
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 0.92rem;
+      display: none;
+    }
+
+    .alert.success {
+      background: rgba(37, 211, 102, 0.15);
+      border: 1px solid rgba(37, 211, 102, 0.3);
+      color: #25d366;
+    }
+
+    .alert.error {
+      background: rgba(255, 107, 107, 0.15);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      color: #ff6b6b;
+    }
+
+    /* Modal de Login */
+    .login-modal {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 999;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 400px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 36px;
+      box-shadow: var(--shadow-card);
+      text-align: center;
+    }
+
+    .login-title {
+      font-family: var(--font-title);
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    .login-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .admin-table thead { display: none; }
+      .admin-table, .admin-table tbody, .admin-table tr, .admin-table td {
+        display: block;
+        width: 100%;
+      }
+      .admin-table tr {
+        margin-bottom: 16px;
+        background: var(--bg-sec);
+        border-radius: 12px;
+        padding: 12px;
+        border: 1px solid var(--border);
+      }
+      .admin-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 4px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- Tela de Login com Senha -->
+  <div class="login-modal" id="login-modal">
+    <div class="login-box">
+      <h1 class="login-title">Painel da Loja</h1>
+      <p class="login-desc">Digite sua senha de acesso para gerenciar produtos e configurações.</p>
+
+      <div class="alert error" id="login-error"></div>
+
+      <form id="form-login">
+        <div class="form-group" style="text-align: left;">
+          <label for="admin-pass" class="form-label">Senha</label>
+          <input type="password" id="admin-pass" class="form-input" placeholder="Digite a senha..." required autofocus>
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">
+          Entrar no painel
+        </button>
+      </form>
+
+      <p style="margin-top: 20px; font-size: 0.82rem; color: var(--text-muted);">
+        <a href="/" style="text-decoration: underline;">Voltar para a loja</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal do Painel -->
+  <div class="admin-container" id="admin-content" style="display: none;">
+    <header class="admin-header">
+      <div>
+        <h1 class="admin-title">Painel Administrativo</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 4px;">Gerencie sua vitrine e produtos em tempo real.</p>
+      </div>
+      <div class="admin-actions">
+        <a href="/" class="btn-secondary">Ver Loja</a>
+        <button type="button" class="btn-secondary" id="btn-logout" style="color: #ff6b6b;">Sair</button>
+      </div>
+    </header>
+
+    <div class="alert success" id="alert-success"></div>
+    <div class="alert error" id="alert-error"></div>
+
+    <!-- 1. Configurações Gerais -->
+    <section class="admin-box">
+      <h2 class="admin-box-title">Configurações Gerais</h2>
+      <form id="form-settings">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="store-brand" class="form-label">Nome da Loja</label>
+            <input type="text" id="store-brand" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label for="store-whatsapp" class="form-label">WhatsApp (DDI + DDD + número, só dígitos)</label>
+            <input type="tel" id="store-whatsapp" class="form-input" placeholder="Ex: 5511999998888" pattern="[0-9]+" required>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary" style="margin-top: 10px;">
+          Salvar alterações da loja
+        </button>
+      </form>
+    </section>
+
+    <!-- 2. Cadastro de Novo Produto -->
+    <section class="admin-box">
+      <h2 class="admin-box-title">Cadastrar Novo Produto</h2>
+      <form id="form-new-product">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prod-name" class="form-label">Nome do Produto</label>
+            <input type="text" id="prod-name" class="form-input" placeholder="Ex: Copo Twister Neon" required>
+          </div>
+          <div class="form-group">
+            <label for="prod-cat" class="form-label">Categoria</label>
+            <input type="text" id="prod-cat" list="cats-list" class="form-input" placeholder="Selecione ou digite..." required>
+            <datalist id="cats-list"></datalist>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="prod-desc" class="form-label">Descrição</label>
+          <textarea id="prod-desc" class="form-textarea" placeholder="Descreva os diferenciais e acabamento do modelo..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Foto do Produto (será otimizada automaticamente)</label>
+          <div class="file-dropzone" id="dropzone">
+            <input type="file" id="prod-photo" accept="image/*" required>
+            <p id="dropzone-text">Clique ou arraste uma foto aqui</p>
+            <img id="preview-img" class="preview-img" alt="Prévia da foto">
+          </div>
+        </div>
+
+        <label class="checkbox-group">
+          <input type="checkbox" id="prod-feat">
+          <span>Usar como destaque no topo (Hero)</span>
+        </label>
+
+        <button type="submit" class="btn-primary" id="btn-save-prod">
+          Cadastrar e publicar produto
+        </button>
+      </form>
+    </section>
+
+    <!-- 3. Lista de Produtos -->
+    <section class="admin-box">
+      <h2 class="admin-box-title">Produtos Cadastrados (<span id="total-prods">0</span>)</h2>
+      <div style="overflow-x: auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Nome</th>
+              <th>Categoria</th>
+              <th>Código</th>
+              <th>Destaque</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="table-products-body">
+            <!-- Linhas preenchidas via admin.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

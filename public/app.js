@@ -208,8 +208,8 @@
     const imgA = state.images[idxA];
     const imgB = state.images[idxB];
 
-    // Fundo limpo escuro
-    ctx.fillStyle = '#0b0e13';
+    // Fundo limpo escuro (palco)
+    ctx.fillStyle = '#17151C';
     ctx.fillRect(0, 0, 576, 1024);
 
     if (imgA && imgA.complete && imgA.naturalWidth > 0) {
@@ -291,11 +291,16 @@
     updateReelDots(k);
   }
 
+  function getReelOffset() {
+    return window.innerWidth <= 760 ? 16 : 24;
+  }
+
   function can(d) {
     const reel = el.reel;
     if (!reel) return false;
     const r = reel.getBoundingClientRect();
     const winHeight = window.innerHeight;
+    const offset = getReelOffset();
 
     // false se a vitrine está longe da tela (r.bottom <= -6 ou r.top >= innerHeight * 1.15)
     if (r.bottom <= -6 || r.top >= winHeight * 1.15) return false;
@@ -303,9 +308,10 @@
     // true se busy
     if (busy) return true;
 
-    // Se não estiver alinhada (|r.top| >= 3), true só quando (d > 0 e r.top > 0) ou (d < 0 e r.top < 0)
-    if (Math.abs(r.top) >= 3) {
-      return (d > 0 && r.top > 0) || (d < 0 && r.top < 0);
+    // Se não estiver alinhada com o palco, true só na direção do palco
+    const diff = r.top - offset;
+    if (Math.abs(diff) >= 4) {
+      return (d > 0 && diff > 0) || (d < 0 && diff < 0);
     }
 
     return true;
@@ -319,10 +325,12 @@
     const reel = el.reel;
     if (!reel) return false;
     const r = reel.getBoundingClientRect();
+    const offset = getReelOffset();
+    const diff = r.top - offset;
 
-    // Se |r.top| >= 3, snap(scrollY + r.top) para alinhar
-    if (Math.abs(r.top) >= 3) {
-      snap(window.scrollY + r.top);
+    // Se |diff| >= 4, snap para alinhar perfeitamente com a margem do palco
+    if (Math.abs(diff) >= 4) {
+      snap(window.scrollY + diff);
       return true;
     }
 
@@ -550,9 +558,10 @@
 
     el.catalogFilters.innerHTML = '';
     categories.forEach(cat => {
+      const slug = cat.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = `filter-btn ${state.selectedCategory === cat ? 'active' : ''}`;
+      btn.className = `filter-btn chip-${slug} ${state.selectedCategory === cat ? 'active' : ''}`;
       btn.textContent = cat;
       btn.addEventListener('click', () => {
         state.selectedCategory = cat;
@@ -572,15 +581,15 @@
     el.productsGrid.innerHTML = '';
 
     filtered.forEach(prod => {
+      const catSlug = (prod.cat || 'outros').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
       const card = document.createElement('article');
-      card.className = 'product-card';
+      card.className = `product-card cat-${catSlug}`;
 
       card.innerHTML = `
-        <div class="product-thumb-wrap">
-          <div class="product-glow"></div>
+        <div class="product-thumb-wrap thumb-cat-${catSlug}">
           <img src="${prod.img}" alt="${escapeHtml(prod.name)}" class="product-thumb" loading="lazy">
         </div>
-        <div class="product-cat">${escapeHtml(prod.cat || 'Personalizado')}</div>
+        <div class="product-cat cat-tag-${catSlug}">${escapeHtml(prod.cat || 'Personalizado')}</div>
         <h3 class="product-name">${escapeHtml(prod.name)}</h3>
         <p class="product-desc">${escapeHtml(prod.desc || '')}</p>
         <div class="product-actions">

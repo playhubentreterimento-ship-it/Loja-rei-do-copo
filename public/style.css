@@ -243,7 +243,7 @@ a {
   align-items: center;
   gap: 8px;
   padding: 6px 16px;
-  background: var(--peach);
+  background: #FFFFFF;
   border: 2px solid var(--ink);
   border-radius: var(--radius-btn);
   color: var(--ink);
@@ -318,7 +318,7 @@ a {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: transparent;
+  background: #FFFFFF;
   color: var(--ink);
   border: 2px solid var(--ink);
   border-radius: var(--radius-btn);
@@ -331,7 +331,7 @@ a {
 }
 
 .btn-secondary:hover {
-  background: var(--paper-2);
+  background: #F4ECE0;
   transform: translate(-1px, -1px);
   box-shadow: 4px 4px 0 var(--ink);
 }

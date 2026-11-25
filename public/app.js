@@ -114,11 +114,10 @@
       // Atualiza nome da loja
       if (state.store.brand) {
         if (el.navBrandName) {
-          const dot = '<span class="nav-brand-dot"></span>';
-          el.navBrandName.innerHTML = `${dot}<span class="brand-text">${escapeHtml(state.store.brand)}</span>`;
+          el.navBrandName.innerHTML = `<img src="img/logo-rei-do-copo.png" alt="${escapeHtml(state.store.brand)}" class="nav-brand-logo">`;
         }
         if (el.footerBrandName) {
-          el.footerBrandName.textContent = state.store.brand;
+          el.footerBrandName.innerHTML = `<img src="img/logo-rei-do-copo.png" alt="${escapeHtml(state.store.brand)}" class="footer-brand-logo">`;
         }
         document.title = `${state.store.brand} | Vitrine 360° e Catálogo`;
       }

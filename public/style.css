@@ -145,15 +145,23 @@ a {
 }
 
 .nav-brand {
-  font-family: var(--font-title);
-  font-weight: 500;
-  font-size: 1.3rem;
-  letter-spacing: -0.02em;
-  color: var(--ink);
   display: flex;
   align-items: center;
   gap: 8px;
   white-space: nowrap;
+}
+
+.nav-brand-logo {
+  height: 44px;
+  width: auto;
+  max-width: 145px;
+  object-fit: contain;
+  display: block;
+  transition: transform var(--transition-fast);
+}
+
+.nav-brand:hover .nav-brand-logo {
+  transform: scale(1.04);
 }
 
 .nav-brand-dot {
@@ -876,10 +884,17 @@ a {
 }
 
 .footer-brand {
-  font-family: var(--font-title);
-  font-weight: 500;
-  font-size: 1.3rem;
-  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-brand-logo {
+  height: 54px;
+  width: auto;
+  max-width: 170px;
+  object-fit: contain;
+  display: block;
 }
 
 /* =========================================
@@ -1185,9 +1200,13 @@ a {
   }
 
   .nav-brand {
-    font-size: 1.05rem;
     white-space: nowrap;
     gap: 6px;
+  }
+
+  .nav-brand-logo {
+    height: 36px;
+    max-width: 110px;
   }
 
   .nav-brand-dot {

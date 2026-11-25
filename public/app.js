@@ -15,6 +15,7 @@
     currentModelIndex: 0,
     currentRestFrame: 0,
     cart: [], // { id, name, code, img, qty }
+    custom: {}, // { [chave]: { qty, img, label, text } }
     selectedCategory: 'Todos',
 
     // Máquina de estados da vitrine 360°
@@ -32,6 +33,18 @@
     touchStartY: 0,
     touchStartX: 0,
     touchActive: false
+  };
+
+  // Integração com a Ficha de Modelos (Linha completa)
+  window.addCustom = (chave, { qty, img, label, text }) => {
+    const q = Math.max(25, parseInt(qty, 10) || 25);
+    if (state.custom[chave]) {
+      state.custom[chave].qty += q;
+    } else {
+      state.custom[chave] = { qty: q, img, label, text };
+    }
+    saveCartToSession();
+    updateCartDisplay();
   };
 
   // --- Elementos do DOM ---
@@ -295,6 +308,7 @@
   }
 
   function can(d) {
+    if (document.documentElement.classList.contains('fh-on')) return false;
     const reel = el.reel;
     if (!reel) return false;
     const r = reel.getBoundingClientRect();
@@ -317,6 +331,7 @@
   }
 
   function handle(d, e) {
+    if (document.documentElement.classList.contains('fh-on')) return false;
     if (!can(d)) return false;
     if (e && e.preventDefault) e.preventDefault();
     if (busy) return true;
@@ -401,6 +416,16 @@
     if (prod) {
       if (el.reelTitle) el.reelTitle.textContent = prod.name;
       if (el.reelDesc) el.reelDesc.textContent = prod.desc || 'Acabamento premium e design exclusivo.';
+
+      const rv = document.getElementById('rv');
+      if (rv) {
+        rv.hidden = !prod.modelo;
+        rv.onclick = () => {
+          if (typeof window.openModelo === 'function' && prod.modelo) {
+            window.openModelo(prod.modelo);
+          }
+        };
+      }
     }
 
     if (el.btnReelAdd) {
@@ -591,6 +616,7 @@
         <div class="product-cat cat-tag-${catSlug}">${escapeHtml(prod.cat || 'Personalizado')}</div>
         <h3 class="product-name">${escapeHtml(prod.name)}</h3>
         <p class="product-desc">${escapeHtml(prod.desc || '')}</p>
+        ${prod.modelo ? `<button type="button" class="btn-ver-modelo" data-ver="${escapeHtml(prod.modelo)}">Ver cores e medidas →</button>` : ''}
         <div class="product-actions">
           <div class="qty-control" role="group" aria-label="Quantidade">
             <button type="button" class="qty-btn btn-minus" aria-label="Diminuir quantidade">−</button>
@@ -640,6 +666,15 @@
           btnAdd.classList.remove('added');
         }, 1200);
       });
+
+      const btnVer = card.querySelector('.btn-ver-modelo');
+      if (btnVer) {
+        btnVer.addEventListener('click', () => {
+          if (typeof window.openModelo === 'function') {
+            window.openModelo(btnVer.dataset.ver);
+          }
+        });
+      }
 
       el.productsGrid.appendChild(card);
     });
@@ -705,12 +740,17 @@
   }
 
   function updateCartDisplay() {
-    const totalItems = state.cart.reduce((sum, i) => sum + i.qty, 0);
+    const cartCount = state.cart.reduce((sum, i) => sum + i.qty, 0);
+    const customCount = Object.values(state.custom || {}).reduce((sum, i) => sum + i.qty, 0);
+    const totalItems = cartCount + customCount;
     if (el.cartCount) el.cartCount.textContent = totalItems;
 
     if (!el.drawerItems) return;
 
-    if (state.cart.length === 0) {
+    const hasCart = state.cart.length > 0;
+    const hasCustom = Object.keys(state.custom || {}).length > 0;
+
+    if (!hasCart && !hasCustom) {
       el.drawerItems.innerHTML = `
         <div class="drawer-empty">
           <p>Seu pedido está vazio.</p>
@@ -726,6 +766,7 @@
     if (el.btnSendWhatsapp) el.btnSendWhatsapp.disabled = false;
     el.drawerItems.innerHTML = '';
 
+    // Itens padrão do catálogo e vitrine
     state.cart.forEach(item => {
       const itemEl = document.createElement('div');
       itemEl.className = 'cart-item';
@@ -763,11 +804,52 @@
 
       el.drawerItems.appendChild(itemEl);
     });
+
+    // Itens personalizados da Linha Completa (Ficha de modelos)
+    Object.keys(state.custom || {}).forEach(k => {
+      const c = state.custom[k];
+      const itemEl = document.createElement('div');
+      itemEl.className = 'cart-item cart-item-custom';
+      itemEl.innerHTML = `
+        <img src="${c.img}" alt="${escapeHtml(c.label)}" class="cart-item-img">
+        <div class="cart-item-info">
+          <span class="cart-item-name">${escapeHtml(c.label)}</span>
+          <div class="cart-item-qty">
+            <button type="button" class="btn-item-minus" data-cu="${escapeHtml(k)}" aria-label="Diminuir">−</button>
+            <span>${c.qty} un.</span>
+            <button type="button" class="btn-item-plus" data-cu="${escapeHtml(k)}" aria-label="Aumentar">+</button>
+          </div>
+        </div>
+        <button type="button" class="btn-remove-item" data-cr="${escapeHtml(k)}" title="Remover item" aria-label="Remover">✕</button>
+      `;
+
+      itemEl.querySelector('.btn-item-minus').addEventListener('click', () => {
+        c.qty = Math.max(25, c.qty - 5);
+        saveCartToSession();
+        updateCartDisplay();
+      });
+
+      itemEl.querySelector('.btn-item-plus').addEventListener('click', () => {
+        c.qty += 5;
+        saveCartToSession();
+        updateCartDisplay();
+      });
+
+      itemEl.querySelector('.btn-remove-item').addEventListener('click', () => {
+        delete state.custom[k];
+        saveCartToSession();
+        updateCartDisplay();
+      });
+
+      el.drawerItems.appendChild(itemEl);
+    });
   }
 
   // --- Envio do Pedido via WhatsApp ---
   function sendOrderViaWhatsapp() {
-    if (state.cart.length === 0 || !state.store) return;
+    const hasCart = state.cart && state.cart.length > 0;
+    const hasCustom = state.custom && Object.keys(state.custom).length > 0;
+    if ((!hasCart && !hasCustom) || !state.store) return;
 
     const whatsappDigits = (state.store.whatsapp || '').replace(/\D/g, '');
     if (!whatsappDigits) {
@@ -785,6 +867,9 @@
     state.cart.forEach(item => {
       text += `• ${item.name} (cód. ${item.code}): ${item.qty} un.\n`;
     });
+    Object.values(state.custom || {}).forEach(c => {
+      text += `• ${c.text}: ${c.qty} un.\n`;
+    });
     text += `\n${urgencyText}\n`;
     text += '\nPode me enviar a foto e os valores?';
 
@@ -796,6 +881,7 @@
   function saveCartToSession() {
     try {
       sessionStorage.setItem('lumina_cart', JSON.stringify(state.cart));
+      sessionStorage.setItem('lumina_custom', JSON.stringify(state.custom));
     } catch (e) {}
   }
 
@@ -809,6 +895,13 @@
             if (!item.qty || item.qty < 25) item.qty = 25;
           });
         }
+      }
+      const savedCustom = sessionStorage.getItem('lumina_custom');
+      if (savedCustom) {
+        state.custom = JSON.parse(savedCustom) || {};
+        Object.values(state.custom).forEach(c => {
+          if (!c.qty || c.qty < 25) c.qty = 25;
+        });
       }
     } catch (e) {}
   }

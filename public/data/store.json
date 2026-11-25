@@ -3,50 +3,19 @@
  "whatsapp": "5567991475313",
  "products": [
   {
-   "id": "p11",
-   "name": "Squeeze Tiffany",
-   "cat": "Squeezes",
-   "desc": "O tom exclusivo tiffany que conquista pelo requinte, durabilidade e beleza atemporal.",
-   "feat": true,
-   "img": "img/products/p11.webp"
-  },
-  {
-   "id": "p12",
-   "name": "Taça Gin Metalizada Dourada",
-   "cat": "Taças",
-   "desc": "Revestimento espelhado dourado ultra resistente, o ápice da sofisticação para seus eventos.",
-   "feat": true,
-   "img": "img/products/p12.webp"
-  },
-  {
-   "id": "p17",
-   "name": "Copo Long Fit Rubi",
-   "cat": "Copos",
-   "desc": "Vermelho rubi translúcido de alta densidade, resistente e de presença impecável.",
-   "feat": true,
-   "img": "img/products/p17.webp"
-  },
-  {
-   "id": "p20",
-   "name": "Copo Twister Light Degradê Roxo e Pink",
-   "cat": "Copos",
-   "desc": "Design espiralado vibrante com iluminação de destaque e contraste eletrizante.",
-   "feat": true,
-   "img": "img/products/p20.webp"
-  },
-  {
    "id": "p01",
    "name": "Copo Long Drink Borda Dourada",
    "cat": "Copos",
-   "desc": "Clássico para festas e eventos corporativos com filete dourado sofisticado.",
+   "desc": "Long drink cristal com borda dourada e arte do casal gravada em dourado.",
    "feat": false,
-   "img": "img/products/p01.webp"
+   "img": "img/products/p01.webp",
+   "modelo": "long-drink"
   },
   {
    "id": "p02",
    "name": "Squeeze Degradê Azul",
    "cat": "Squeezes",
-   "desc": "Gradiente de tons azuis com bico retrátil e alça para transporte.",
+   "desc": "Squeeze fosco com degradê azul, tampa com alça e sua marca em destaque.",
    "feat": false,
    "img": "img/products/p02.webp"
   },
@@ -54,31 +23,34 @@
    "id": "p03",
    "name": "Taça Vinho Branca Borda Dourada",
    "cat": "Taças",
-   "desc": "Porcelanizada em branco brilhante com delicado filete em ouro na borda.",
+   "desc": "Taça branca com borda dourada e monograma personalizado.",
    "feat": false,
-   "img": "img/products/p03.webp"
+   "img": "img/products/p03.webp",
+   "modelo": "vinho"
   },
   {
    "id": "p04",
    "name": "Caneca Preto Fosco",
    "cat": "Canecas",
-   "desc": "Caneca robusta em polímero térmico com acabamento aveludado preto fosco.",
+   "desc": "Caneca preta emborrachada com nomes ou frase em impressão branca.",
    "feat": false,
-   "img": "img/products/p04.webp"
+   "img": "img/products/p04.webp",
+   "modelo": "caneca"
   },
   {
    "id": "p05",
    "name": "Taça Gin Degradê Rosa e Azul",
    "cat": "Taças",
-   "desc": "Harmonia de tons pastel em degradê com bojo amplo para coquetelaria.",
+   "desc": "Taça de gin com degradê vibrante e personalização em branco.",
    "feat": false,
-   "img": "img/products/p05.webp"
+   "img": "img/products/p05.webp",
+   "modelo": "gin-degrade"
   },
   {
    "id": "p06",
    "name": "Copo Brasileirinho",
    "cat": "Copos",
-   "desc": "Combinação vibrante verde e amarelo para comemorações e torcidas.",
+   "desc": "Clássico copo brasileirinho transparente com frase ou logo em preto.",
    "feat": false,
    "img": "img/products/p06.webp"
   },
@@ -86,15 +58,16 @@
    "id": "p07",
    "name": "Caneca Preto Fosco Interior Vermelho",
    "cat": "Canecas",
-   "desc": "Contraste arrojado entre o exterior sóbrio e o interior vívido.",
+   "desc": "Caneca preta fosca com interior vermelho e arte personalizada.",
    "feat": false,
-   "img": "img/products/p07.webp"
+   "img": "img/products/p07.webp",
+   "modelo": "caneca"
   },
   {
    "id": "p08",
    "name": "Squeeze Azul",
    "cat": "Squeezes",
-   "desc": "Tonalidade azul oceano clássica com acabamento fosco e pegada ergonômica.",
+   "desc": "Squeeze fosco azul com tampa e alça. Ideal para brindes de empresa.",
    "feat": false,
    "img": "img/products/p08.webp"
   },
@@ -102,7 +75,7 @@
    "id": "p09",
    "name": "Squeeze Verde Neon",
    "cat": "Squeezes",
-   "desc": "Estilo esportivo moderno com alta visibilidade e vedação térmica reforçada.",
+   "desc": "Squeeze fosco verde neon, cor que se destaca em qualquer evento.",
    "feat": false,
    "img": "img/products/p09.webp"
   },
@@ -110,57 +83,98 @@
    "id": "p10",
    "name": "Squeeze Amarelo Bandeira",
    "cat": "Squeezes",
-   "desc": "Cor intensa e alegre para academias, treinos e ações promocionais.",
+   "desc": "Squeeze amarelo bandeira, firme, leve e pronto para a sua marca.",
    "feat": false,
    "img": "img/products/p10.webp"
+  },
+  {
+   "id": "p11",
+   "name": "Squeeze Tiffany",
+   "cat": "Squeezes",
+   "desc": "Squeeze fosco na cor tiffany com tampa e alça combinando.",
+   "feat": true,
+   "img": "img/products/p11.webp"
+  },
+  {
+   "id": "p12",
+   "name": "Taça Gin Metalizada Dourada",
+   "cat": "Taças",
+   "desc": "Taça de gin com acabamento metalizado dourado, a peça que brilha na festa.",
+   "feat": true,
+   "img": "img/products/p12.webp",
+   "modelo": "gin"
   },
   {
    "id": "p13",
    "name": "Taça Champagne Preta",
    "cat": "Taças",
-   "desc": "Visual minimalista e marcante para eventos de gala e ocasiões exclusivas.",
+   "desc": "Taça de champagne preta, elegante para casamentos e formaturas.",
    "feat": false,
-   "img": "img/products/p13.webp"
+   "img": "img/products/p13.webp",
+   "modelo": "espumante"
   },
   {
    "id": "p14",
    "name": "Taça Champagne Dourada",
    "cat": "Taças",
-   "desc": "Brilho metálico nobre para celebrações inesquecíveis e momentos únicos.",
+   "desc": "Taça de champagne dourada perolada para brindes especiais.",
    "feat": false,
-   "img": "img/products/p14.webp"
+   "img": "img/products/p14.webp",
+   "modelo": "espumante"
   },
   {
    "id": "p15",
    "name": "Taça Champagne Cristal",
    "cat": "Taças",
-   "desc": "Transparência impecável com resistência superior para brindar a vida.",
+   "desc": "Taça de champagne cristal transparente, clássica e versátil.",
    "feat": false,
-   "img": "img/products/p15.webp"
+   "img": "img/products/p15.webp",
+   "modelo": "espumante"
   },
   {
    "id": "p16",
    "name": "Copo Long Fit Fumê",
    "cat": "Copos",
-   "desc": "Efeito translúcido dark com graduação suave, sóbrio e imponente.",
+   "desc": "Copo long fit translúcido na cor fumê, sofisticado e resistente.",
    "feat": false,
-   "img": "img/products/p16.webp"
+   "img": "img/products/p16.webp",
+   "modelo": "long-drink"
+  },
+  {
+   "id": "p17",
+   "name": "Copo Long Fit Rubi",
+   "cat": "Copos",
+   "desc": "Copo long fit translúcido na cor rubi para eventos marcantes.",
+   "feat": true,
+   "img": "img/products/p17.webp",
+   "modelo": "long-drink"
   },
   {
    "id": "p18",
    "name": "Copo Long Fit Verde Leitoso",
    "cat": "Copos",
-   "desc": "Design contemporâneo com tom verde leitoso suave e toque aveludado.",
+   "desc": "Copo long fit verde leitoso, visual moderno e personalização nítida.",
    "feat": false,
-   "img": "img/products/p18.webp"
+   "img": "img/products/p18.webp",
+   "modelo": "long-drink"
   },
   {
    "id": "p19",
    "name": "Taça Gin Degradê Preto",
    "cat": "Taças",
-   "desc": "Elegância pura com transição suave em degradê preto fosco, perfeita para drinks refinados.",
+   "desc": "Taça de gin fosca com degradê do cinza ao preto.",
    "feat": false,
-   "img": "img/products/p19.webp"
+   "img": "img/products/p19.webp",
+   "modelo": "gin-degrade"
+  },
+  {
+   "id": "p20",
+   "name": "Copo Twister Light Degradê Roxo e Pink",
+   "cat": "Copos",
+   "desc": "Copo twister light com degradê roxo e pink, leve e colorido.",
+   "feat": true,
+   "img": "img/products/p20.webp",
+   "modelo": "twister-degrade"
   }
  ]
 }

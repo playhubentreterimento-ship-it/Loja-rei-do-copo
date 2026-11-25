@@ -484,7 +484,7 @@
         const prod = state.store.products.find(p => p.id === model.p);
         if (!prod) return;
 
-        addToCart(prod, 12);
+        addToCart(prod, 25);
         el.btnReelAdd.textContent = 'Adicionado ao pedido ✓';
         el.btnReelAdd.classList.add('added');
       });
@@ -594,7 +594,7 @@
         <div class="product-actions">
           <div class="qty-control" role="group" aria-label="Quantidade">
             <button type="button" class="qty-btn btn-minus" aria-label="Diminuir quantidade">−</button>
-            <input type="number" class="qty-input" value="12" min="1" step="6" aria-label="Quantidade em unidades">
+            <input type="number" class="qty-input" value="25" min="25" step="5" aria-label="Quantidade em unidades (mínimo 25)">
             <button type="button" class="qty-btn btn-plus" aria-label="Aumentar quantidade">+</button>
           </div>
           <button type="button" class="btn-add">
@@ -609,25 +609,27 @@
       const btnAdd = card.querySelector('.btn-add');
 
       btnMinus.addEventListener('click', () => {
-        let val = parseInt(input.value, 10) || 12;
-        val = Math.max(1, val - 6);
+        let val = parseInt(input.value, 10) || 25;
+        val = Math.max(25, val - 5);
         input.value = val;
       });
 
       btnPlus.addEventListener('click', () => {
-        let val = parseInt(input.value, 10) || 12;
-        val += 6;
+        let val = parseInt(input.value, 10) || 25;
+        val += 5;
         input.value = val;
       });
 
-      input.addEventListener('change', () => {
+      const enforceMin25 = () => {
         let val = parseInt(input.value, 10);
-        if (isNaN(val) || val < 1) val = 1;
+        if (isNaN(val) || val < 25) val = 25;
         input.value = val;
-      });
+      };
+      input.addEventListener('change', enforceMin25);
+      input.addEventListener('blur', enforceMin25);
 
       btnAdd.addEventListener('click', () => {
-        const qty = parseInt(input.value, 10) || 12;
+        const qty = Math.max(25, parseInt(input.value, 10) || 25);
         addToCart(prod, qty);
 
         // Feedback de botão "Adicionado" por 1,2 s
@@ -685,6 +687,7 @@
   }
 
   function addToCart(prod, qty) {
+    qty = Math.max(25, parseInt(qty, 10) || 25);
     const existing = state.cart.find(item => item.id === prod.id);
     if (existing) {
       existing.qty += qty;
@@ -741,13 +744,13 @@
       `;
 
       itemEl.querySelector('.btn-item-minus').addEventListener('click', () => {
-        item.qty = Math.max(1, item.qty - 6);
+        item.qty = Math.max(25, item.qty - 5);
         saveCartToSession();
         updateCartDisplay();
       });
 
       itemEl.querySelector('.btn-item-plus').addEventListener('click', () => {
-        item.qty += 6;
+        item.qty += 5;
         saveCartToSession();
         updateCartDisplay();
       });
@@ -801,6 +804,11 @@
       const saved = sessionStorage.getItem('lumina_cart');
       if (saved) {
         state.cart = JSON.parse(saved);
+        if (Array.isArray(state.cart)) {
+          state.cart.forEach(item => {
+            if (!item.qty || item.qty < 25) item.qty = 25;
+          });
+        }
       }
     } catch (e) {}
   }

@@ -660,6 +660,17 @@
     if (el.btnSendWhatsapp) {
       el.btnSendWhatsapp.addEventListener('click', sendOrderViaWhatsapp);
     }
+
+    // Gerenciador das opções de urgência
+    const urgencyInputs = document.querySelectorAll('input[name="order-urgency"]');
+    urgencyInputs.forEach(input => {
+      input.addEventListener('change', () => {
+        document.querySelectorAll('.urgency-card').forEach(card => card.classList.remove('active'));
+        const parentCard = input.closest('.urgency-card');
+        if (parentCard) parentCard.classList.add('active');
+      });
+    });
+
     updateCartDisplay();
   }
 
@@ -761,10 +772,17 @@
       return;
     }
 
+    const urgencyInput = document.querySelector('input[name="order-urgency"]:checked');
+    const isUrgent = urgencyInput && urgencyInput.value === 'urgente';
+    const urgencyText = isUrgent
+      ? '⚡ *Prazo:* Pedido com urgência (taxa adicional)'
+      : '📦 *Prazo:* Pedido normal sem urgência (não cobra adicional)';
+
     let text = 'Olá! Quero fazer um orçamento destes itens:\n\n';
     state.cart.forEach(item => {
       text += `• ${item.name} (cód. ${item.code}): ${item.qty} un.\n`;
     });
+    text += `\n${urgencyText}\n`;
     text += '\nPode me enviar a foto e os valores?';
 
     const url = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(text)}`;

@@ -1128,11 +1128,123 @@ a {
 }
 
 .drawer-footer {
-  padding-top: 20px;
+  padding-top: 18px;
   border-top: 2px solid var(--ink);
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* Opções de Urgência no Envio do Pedido */
+.urgency-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.urgency-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-soft);
+}
+
+.urgency-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.urgency-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #FFFFFF;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: all var(--transition-fast);
+  position: relative;
+  user-select: none;
+}
+
+.urgency-card:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.urgency-card.active {
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+#card-urgency-fast.active {
+  border-color: var(--accent);
+  background: #FFF9F6;
+  box-shadow: 3px 3px 0 var(--accent);
+}
+
+.urgency-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.urgency-radio-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: #FFFFFF;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.urgency-card.active .urgency-radio-dot {
+  background: var(--ink);
+}
+
+.urgency-card.active .urgency-radio-dot::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #FFFFFF;
+}
+
+#card-urgency-fast.active .urgency-radio-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.urgency-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.urgency-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+#card-urgency-fast.active .urgency-title {
+  color: var(--accent);
+}
+
+.urgency-desc {
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 .btn-whatsapp {

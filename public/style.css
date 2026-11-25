@@ -25,7 +25,7 @@
   --blue: #BCD6EE;        /* Copos */
   --butter: #F8E3A3;      /* Canecas */
   --lilac: #D9CCF0;       /* Outros / Geral */
-  --peach: #F9CFB5;       /* Filtro "Todos", destaques e sacola */
+  --peach: #FFFFFF;       /* Filtro "Todos", destaques, sacola e botões em branco puro */
 
   /* Palcos Escuros & Ações */
   --stage: #17151C;       /* Palco profundo emoldurado para vídeo e vitrine 360° */
@@ -493,9 +493,9 @@ a {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--peach);
+  background: #FFFFFF;
   color: var(--ink);
-  border: 2px solid var(--peach);
+  border: 2px solid var(--ink);
   font-weight: 700;
   font-size: 0.95rem;
   padding: 13px 28px;
@@ -641,7 +641,7 @@ a {
 /* Categorias ativas com tintas pastéis chapadas */
 .filter-btn.active.chip-todos,
 .filter-btn.active:not([class*="chip-"]) {
-  background: var(--peach);
+  background: #FFFFFF;
 }
 .filter-btn.active.chip-tacas {
   background: var(--pink);
@@ -896,7 +896,7 @@ a {
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  background: var(--peach);
+  background: #FFFFFF;
   color: var(--ink);
   border: 2px solid var(--ink);
   padding: 0;
@@ -1162,14 +1162,14 @@ a {
   color: var(--ink);
   border: 2px solid var(--ink);
   border-radius: var(--radius-btn);
-  background: transparent;
+  background: #FFFFFF;
   box-shadow: 2px 2px 0 var(--ink);
   cursor: pointer;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
 .btn-continue:hover {
-  background: var(--card);
+  background: var(--paper-2);
   transform: translate(-1px, -1px);
   box-shadow: 3px 3px 0 var(--ink);
 }
